@@ -1,0 +1,50 @@
+CREATE OR REPLACE TRIGGER updatestock 
+AFTER INSERT ON transaction 
+FOR EACH ROW
+BEGIN
+   IF :NEW.type = 'purchase' THEN
+      UPDATE stock
+      SET no_of_pieces_available = no_of_pieces_available + :NEW.no_of_pieces
+      WHERE itemid = :NEW.itemid;
+   ELSIF :NEW.type = 'sales' THEN
+      UPDATE stock
+      SET no_of_pieces_available = no_of_pieces_available - :NEW.no_of_pieces
+      WHERE itemid = :NEW.itemid AND no_of_pieces_available >= :NEW.no_of_pieces;
+
+      IF SQL%ROWCOUNT = 0 THEN
+         RAISE_APPLICATION_ERROR(-20001, 'Not enough stock available');
+      END IF;
+   END IF;
+END;
+/
+
+
+ set serveroutput on
+ declare
+  r1 varchar2(200);
+   begin
+   r1:='insert into transaction(tr_id,type,tr_date,itemid,no_of_pieces)values(13,''sales'',to_date(''2022-08-05'',''YYYY-MM-DD''),2,1)';
+   execute immediate r1;
+   dbms_output.put_line('row inserted');
+  exception
+  when others then
+  dbms_output.put_line('error:'||SQLERRM);
+  end;
+
+
+
+
+  set serveroutput on
+ declare
+  r stock%rowtype;
+  begin
+  for r in(select * from stock)
+loop
+dbms_output.put_line(r.stock_no||''||r.itemid||''||r.no_of_pieces_available);
+end loop;
+end;
+
+
+
+
+
