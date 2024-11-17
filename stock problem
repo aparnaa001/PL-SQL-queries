@@ -103,4 +103,20 @@ END;
 
 
 
+CREATE OR REPLACE TRIGGER record_retirement
+AFTER UPDATE OF RETIRES ON SALARIEDWORKER
+FOR EACH ROW
+WHEN (NEW.RETIRES = 'Y') -- Trigger only when the worker retires
+BEGIN
+    -- Insert pension details into the PENSION table
+    INSERT INTO PENSION (WORKERID, PENSIONAMOUNT)
+    VALUES (:NEW.WORKERID, :NEW.SALARY / 2);
+
+    DBMS_OUTPUT.PUT_LINE('Retirement recorded: Worker ID ' || :NEW.WORKERID || 
+                         ', Pension Amount ' || (:NEW.SALARY / 2));
+END;
+/
+
+
+
 
