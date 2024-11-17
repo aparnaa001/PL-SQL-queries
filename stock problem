@@ -60,6 +60,46 @@ WHERE t.type = 'Sales'
   AND TRUNC(t.tr_date) = TO_DATE('15-FEB-2023', 'DD-MON-YYYY');
 
 
+--cursor
+
+DECLARE
+    CURSOR worker_cursor IS
+        SELECT WORKERID, SALARY
+        FROM SALARIEDWORKER;
+    
+    v_workerid SALARIEDWORKER.WORKERID%TYPE;
+    v_salary SALARIEDWORKER.SALARY%TYPE;
+    v_tax SALARIEDWORKER.TAX%TYPE;
+BEGIN
+    -- Open the cursor
+    OPEN worker_cursor;
+    LOOP
+        FETCH worker_cursor INTO v_workerid, v_salary;
+        EXIT WHEN worker_cursor%NOTFOUND;
+        
+        -- Calculate tax based on salary ranges
+        IF v_salary <= 5000 THEN
+            v_tax := 0;
+        ELSIF v_salary <= 8000 THEN
+            v_tax := v_salary * 0.05;
+        ELSIF v_salary <= 10000 THEN
+            v_tax := v_salary * 0.10;
+        ELSE
+            v_tax := v_salary * 0.15;
+        END IF;
+
+        -- Update the tax in SALARIEDWORKER
+        UPDATE SALARIEDWORKER
+        SET TAX = v_tax
+        WHERE WORKERID = v_workerid;
+    END LOOP;
+
+    -- Close the cursor
+    CLOSE worker_cursor;
+
+    DBMS_OUTPUT.PUT_LINE('Tax calculated and updated for all workers.');
+END;
+/
 
 
 
