@@ -47,4 +47,20 @@ end;
 
 
 
+--display items on dates
+SELECT t.tr_id,
+       t.tr_date,
+       t.no_of_pieces,
+       i.itname,
+       i.unitprice,
+       (t.no_of_pieces * i.unitprice) AS total_price
+FROM transaction t
+JOIN item i ON t.itemid = i.itemid
+WHERE t.type = 'Sales'
+  AND TRUNC(t.tr_date) = TO_DATE('15-FEB-2023', 'DD-MON-YYYY');
+
+
+
+
+
 
