@@ -117,6 +117,8 @@ BEGIN
 END;
 /
 
-
+--join
+select item.*,transaction.tr_date from item join transaction where item.itemid=transaction.itemid and tran
+saction.tr_date='2022-01-05';
 
 
