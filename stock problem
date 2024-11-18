@@ -122,3 +122,25 @@ select item.*,transaction.tr_date from item join transaction where item.itemid=t
 saction.tr_date='2022-01-05';
 
 
+
+
+SET SERVEROUTPUT ON;
+
+DECLARE
+
+    CURSOR st_cur IS
+        SELECT item.itemid, transaction.tr_date
+        FROM item
+        JOIN transaction
+        ON item.itemid = transaction.itemid
+        WHERE transaction.tr_date = TO_DATE('2022-08-05', 'YYYY-MM-DD');
+BEGIN
+    -- Iterate through the cursor
+    FOR i IN st_cur LOOP
+        DBMS_OUTPUT.PUT_LINE('Item ID: ' || i.itemid || ', Transaction Date: ' || TO_CHAR(i.tr_date, 'YYYY-MM-DD'));
+    END LOOP;
+END;
+
+
+
+
